@@ -2,11 +2,7 @@
 """
 JavaCPUtils Bundler
 -------------------
-Automatically inlines cp library classes (Pair, IntPair, LongPair) into your
-solution file so you can submit directly to Codeforces, LeetCode, CSES, HackerRank, etc.
-
-Usage:
-    bundle Solution.java [output.java]
+Inlines required utility classes into your solution file for competitive programming.
 """
 
 import sys
@@ -24,7 +20,11 @@ AVAILABLE_CLASSES = {
 }
 
 def clean_class_for_inlining(code: str, class_name: str) -> str:
-    """Removes package declarations, imports, and makes the class package-private."""
+    """Strips package declarations, imports, javadocs, and makes the class package-private."""
+    # Remove block comments / Javadocs
+    code = re.sub(r"/\*\*.*?\*/", "", code, flags=re.DOTALL)
+    code = re.sub(r"/\*.*?\*/", "", code, flags=re.DOTALL)
+
     lines = code.splitlines()
     cleaned = []
     for line in lines:
@@ -32,14 +32,21 @@ def clean_class_for_inlining(code: str, class_name: str) -> str:
         # Skip package statement
         if stripped.startswith("package "):
             continue
-        # Skip ANY import statements (all imports must be at file top)
+        # Skip ANY import statements
         if stripped.startswith("import "):
             continue
-        # Convert public class to class (package-private)
+        # Skip serialVersionUID
+        if "serialVersionUID" in stripped:
+            continue
+        # Convert public class to package-private class
         if re.match(r"^public\s+class\s+" + class_name + r"\b", stripped):
             line = line.replace("public class", "class", 1)
         cleaned.append(line)
-    return "\n".join(cleaned).strip()
+
+    result = "\n".join(cleaned)
+    # Clean up empty lines
+    result = re.sub(r"\n\s*\n\s*\n+", "\n\n", result).strip()
+    return result
 
 def bundle(input_path: str, output_path: str = None):
     if not os.path.isfile(input_path):
@@ -90,22 +97,14 @@ def bundle(input_path: str, output_path: str = None):
     if import_block:
         import_block += "\n"
 
-    header = "// =========================================================\n" \
-             "// Bundled by JavaCPUtils for Online Judge Submission\n" \
-             "// =========================================================\n\n"
-    
-    final_output = header + import_block + content_cleaned.strip() + "\n\n"
+    final_output = import_block + content_cleaned.strip() + "\n\n"
     if inlined_code:
-        final_output += "// =========================================================\n" \
-                        "// INLINED CP LIBRARY CLASSES\n" \
-                        "// =========================================================\n\n"
         final_output += "\n\n".join(inlined_code) + "\n"
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(final_output)
 
-    print(f"✓ Bundled successfully into: {output_path}")
-    print("✓ Ready to copy-paste into Codeforces, LeetCode, CSES, HackerRank!")
+    print(f"Bundled -> {output_path}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
