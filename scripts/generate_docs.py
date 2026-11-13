@@ -217,3 +217,4 @@ res = subprocess.run(cmd, capture_output=True, text=True)
 print("LibreOffice output:", res.stdout, res.stderr)
 if os.path.isfile(PDF_PATH):
     print("PDF successfully generated at:", PDF_PATH)
+

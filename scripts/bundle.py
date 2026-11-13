@@ -16,12 +16,19 @@ SRC_DIR = os.path.join(PROJECT_DIR, "src", "main", "java", "cp")
 AVAILABLE_CLASSES = {
     "Pair": "Pair.java",
     "IntPair": "IntPair.java",
-    "LongPair": "LongPair.java"
+    "LongPair": "LongPair.java",
+    "FastScanner": "FastScanner.java",
+    "FastWriter": "FastWriter.java",
+    "IO": "IO.java"
+}
+
+CLASS_DEPENDENCIES = {
+    "IO": ["FastScanner", "FastWriter"],
+    "FastScanner": ["IntPair", "LongPair"]
 }
 
 def clean_class_for_inlining(code: str, class_name: str) -> str:
     """Strips package declarations, imports, javadocs, and makes the class package-private."""
-    # Remove block comments / Javadocs
     code = re.sub(r"/\*\*.*?\*/", "", code, flags=re.DOTALL)
     code = re.sub(r"/\*.*?\*/", "", code, flags=re.DOTALL)
 
@@ -29,22 +36,19 @@ def clean_class_for_inlining(code: str, class_name: str) -> str:
     cleaned = []
     for line in lines:
         stripped = line.strip()
-        # Skip package statement
         if stripped.startswith("package "):
             continue
-        # Skip ANY import statements
         if stripped.startswith("import "):
             continue
-        # Skip serialVersionUID
         if "serialVersionUID" in stripped:
             continue
-        # Convert public class to package-private class
         if re.match(r"^public\s+class\s+" + class_name + r"\b", stripped):
             line = line.replace("public class", "class", 1)
+        if re.match(r"^public\s+final\s+class\s+" + class_name + r"\b", stripped):
+            line = line.replace("public final class", "final class", 1)
         cleaned.append(line)
 
     result = "\n".join(cleaned)
-    # Clean up empty lines
     result = re.sub(r"\n\s*\n\s*\n+", "\n\n", result).strip()
     return result
 
@@ -75,10 +79,29 @@ def bundle(input_path: str, output_path: str = None):
 
     content_cleaned = re.sub(r"\bpublic\s+class\s+([A-Za-z0-9_]+)", adjust_public_class, content_cleaned)
 
-    # Detect which classes are needed
-    inlined_code = []
-    for class_name, file_name in AVAILABLE_CLASSES.items():
+    # Determine needed classes from source
+    needed_classes = set()
+    for class_name in AVAILABLE_CLASSES:
         if re.search(r"\b" + class_name + r"\b", content_cleaned):
+            needed_classes.add(class_name)
+
+    # Resolve dependencies recursively
+    changed = True
+    while changed:
+        changed = False
+        for c in list(needed_classes):
+            if c in CLASS_DEPENDENCIES:
+                for dep in CLASS_DEPENDENCIES[c]:
+                    if dep not in needed_classes:
+                        needed_classes.add(dep)
+                        changed = True
+
+    # Order classes gracefully
+    order = ["Pair", "IntPair", "LongPair", "FastScanner", "FastWriter", "IO"]
+    inlined_code = []
+    for class_name in order:
+        if class_name in needed_classes:
+            file_name = AVAILABLE_CLASSES[class_name]
             file_path = os.path.join(SRC_DIR, file_name)
             if os.path.isfile(file_path):
                 with open(file_path, "r", encoding="utf-8") as cf:
@@ -86,14 +109,14 @@ def bundle(input_path: str, output_path: str = None):
                 cleaned = clean_class_for_inlining(raw_code, class_name)
                 inlined_code.append(cleaned)
 
-    # Ensure java.util.* and java.io.* imports are at the top if needed
-    needed_imports = []
+    # Ensure necessary java standard imports are at the top
+    standard_imports = []
     if "import java.util." not in content_cleaned:
-        needed_imports.append("import java.util.*;")
+        standard_imports.append("import java.util.*;")
     if "import java.io." not in content_cleaned and inlined_code:
-        needed_imports.append("import java.io.*;")
+        standard_imports.append("import java.io.*;")
 
-    import_block = "\n".join(needed_imports)
+    import_block = "\n".join(standard_imports)
     if import_block:
         import_block += "\n"
 

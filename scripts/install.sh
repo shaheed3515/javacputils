@@ -54,3 +54,4 @@ echo "1. Restart your terminal or run: source $SHELL_RC"
 echo "2. In your Java code, simply use: import cp.*;"
 echo "3. When ready to submit to Codeforces/LeetCode, run: bundle Solution.java"
 echo "============================================="
+
