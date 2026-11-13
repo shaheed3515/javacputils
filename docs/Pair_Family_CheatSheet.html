@@ -1,0 +1,187 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pair_Family_CheatSheet</title>
+<style>
+@page {
+    size: A4;
+    margin: 16mm 14mm 16mm 14mm;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    color: #24292e;
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 10pt;
+}
+h1 {
+    color: #0969da;
+    border-bottom: 2px solid #d0d7de;
+    padding-bottom: 0.25em;
+    font-size: 18pt;
+    margin-top: 0;
+}
+h2 {
+    color: #1f2328;
+    border-bottom: 1px solid #d0d7de;
+    padding-bottom: 0.2em;
+    font-size: 13pt;
+    margin-top: 1.2em;
+    page-break-after: avoid;
+}
+h3 {
+    color: #32383f;
+    font-size: 11pt;
+    margin-top: 1em;
+    page-break-after: avoid;
+}
+code {
+    background-color: #eff1f3;
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 88%;
+    color: #cf222e;
+}
+pre {
+    background-color: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 8.5pt;
+    line-height: 1.35;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+pre code {
+    background: none;
+    padding: 0;
+    color: #24292e;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.8em 0;
+    font-size: 9pt;
+    page-break-inside: avoid;
+}
+table, th, td {
+    border: 1px solid #d0d7de;
+}
+th {
+    background-color: #f6f8fa;
+    padding: 5px 8px;
+    font-weight: 600;
+    text-align: left;
+}
+td {
+    padding: 5px 8px;
+}
+tr:nth-child(even) {
+    background-color: #fcfdfe;
+}
+hr {
+    border: 0;
+    height: 1px;
+    background: #d0d7de;
+    margin: 1em 0;
+}
+ul, ol {
+    padding-left: 1.6em;
+}
+li {
+    margin: 0.2em 0;
+}
+</style>
+</head><body>
+<h1>JavaCPUtils: Pair Family API Cheat Sheet</h1>
+
+<p><strong>Unified API across <code>Pair&lt;F, S&gt;</code>, <code>IntPair</code>, and <code>LongPair</code>.</strong>  </p>
+<p>*Rule: Any method shown below works identically for <code>Pair</code>, <code>IntPair</code>, and <code>LongPair</code>.*</p>
+
+<hr>
+
+<h2>1. Quick Class Selector</h2>
+
+<table>
+<tr><th>Class</th><th>Field Types</th><th>Memory</th><th>Primary Use Case</th></tr>
+<tr><td><strong><code>Pair&lt;F, S&gt;</code></strong></td><td>Generic Objects (<code>F</code>, <code>S</code>)</td><td>~64 bytes</td><td>Mixed types (<code>Pair&lt;String, Integer&gt;</code>), floating point, custom objects, nested pairs.</td></tr>
+<tr><td><strong><code>IntPair</code></strong></td><td>Primitive <code>int first, second;</code></td><td><strong>24 bytes</strong></td><td><strong>3x faster</strong>, 60% less RAM. Coordinate compression, BFS, standard CP graph edges.</td></tr>
+<tr><td><strong><code>LongPair</code></strong></td><td>Primitive <code>long first, second;</code></td><td><strong>24 bytes</strong></td><td>Dijkstra shortest path, MST with edge weights up to $10^{18}$, large coordinate grids.</td></tr>
+</table>
+
+<hr>
+
+<h2>2. Construction &amp; Direct Public Fields</h2>
+
+<pre><code>// Option A: Using constructor
+IntPair p = new IntPair(10, 20);
+
+// Option B: Using static factory (zero diamond operator)
+var p = IntPair.of(10, 20);
+var gp = Pair.of(&quot;Alice&quot;, 100);
+
+// Direct C++ style read and write:
+p.first += 5;           // p.first is now 15
+p.second = 99;          // p.second is now 99
+System.out.println(p.first + &quot; &quot; + p.second);</code></pre>
+
+<hr>
+
+<h2>3. Complete Methods Reference Table</h2>
+
+<table>
+<tr><th>Operation</th><th>Method Signature</th><th>Description &amp; Example</th></tr>
+<tr><td><strong>Field Access</strong></td><td><code>p.first</code>, <code>p.second</code></td><td>Direct public fields. Zero getter/setter boilerplate.</td></tr>
+<tr><td><strong>Batch Update</strong></td><td><code>p.set(a, b)</code></td><td>Updates both fields simultaneously in-place: <code>p.set(5, 10);</code></td></tr>
+<tr><td><strong>Swap Elements</strong></td><td><code>p.swap()</code></td><td>Returns a new pair with reversed values: <code>IntPair rev = p.swap();</code></td></tr>
+<tr><td><strong>Natural Compare</strong></td><td><code>p1.compareTo(p2)</code></td><td>Lexicographical order (&lt; 0, == 0, &gt; 0). Compares <code>first</code>; tie-breaks on <code>second</code>.</td></tr>
+<tr><td><strong>Sort by First</strong></td><td><code>IntPair.comparingFirst()</code></td><td>Built-in <code>Comparator</code> sorting by <code>first</code> ascending.</td></tr>
+<tr><td><strong>Sort by Second</strong></td><td><code>IntPair.comparingSecond()</code></td><td>Built-in <code>Comparator</code> sorting by <code>second</code> ascending.</td></tr>
+<tr><td><strong>Equality</strong></td><td><code>p1.equals(p2)</code></td><td>Checks value equality. Handles <code>null</code> safely.</td></tr>
+<tr><td><strong>Hash Distribution</strong></td><td><code>p.hashCode()</code></td><td>Generates integer hash. <code>IntPair</code> uses direct arithmetic (<code>31 * first + second</code>).</td></tr>
+<tr><td><strong>String Representation</strong></td><td><code>p.toString()</code></td><td>Formatted representation: returns <code>&quot;(10, 20)&quot;</code>.</td></tr>
+<tr><td><strong>Duplication</strong></td><td><code>p.clone()</code></td><td>Returns an independent copy of the pair object.</td></tr>
+</table>
+
+<hr>
+
+<h2>4. Sorting, PriorityQueue &amp; Collection Examples</h2>
+
+<h3>A. Automatic Lexicographical Sorting</h3>
+<pre><code>List&lt;IntPair&gt; list = new ArrayList&lt;&gt;();
+list.add(new IntPair(5, 20));
+list.add(new IntPair(2, 50));
+list.add(new IntPair(5, 10));
+
+Collections.sort(list);
+// Result: (2, 50), (5, 10), (5, 20)  &lt;- (5, 10) comes before (5, 20)</code></pre>
+
+<h3>B. Custom Sorting (By Second / Reversed)</h3>
+<pre><code>// 1. Sort by second ascending:
+list.sort(IntPair.comparingSecond());
+
+// 2. Sort by second descending:
+list.sort(IntPair.comparingSecond().reversed());
+
+// 3. Custom lambda (e.g. by first ASC, then second DESC):
+list.sort((a, b) -&gt; {
+    int cmp = Integer.compare(a.first, b.first);
+    return (cmp != 0) ? cmp : Integer.compare(b.second, a.second);
+});</code></pre>
+
+<h3>C. PriorityQueue (Min-Heap / Dijkstra)</h3>
+<pre><code>// Automatically orders by smallest first, then smallest second!
+PriorityQueue&lt;LongPair&gt; pq = new PriorityQueue&lt;&gt;();
+pq.add(new LongPair(dist[v], v)); // (distance, node)
+
+LongPair closest = pq.poll();     // Pops smallest distance instantly</code></pre>
+
+<h3>D. HashSet / HashMap</h3>
+<pre><code>Set&lt;IntPair&gt; visited = new HashSet&lt;&gt;();
+visited.add(new IntPair(0, 0));
+
+if (visited.contains(new IntPair(0, 0))) {
+    // Correctly returns true!
+}</code></pre>
+</body></html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>FastIO_CheatSheet</title>
+<style>
+@page {
+    size: A4;
+    margin: 16mm 14mm 16mm 14mm;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    color: #24292e;
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 10pt;
+}
+h1 {
+    color: #0969da;
+    border-bottom: 2px solid #d0d7de;
+    padding-bottom: 0.25em;
+    font-size: 18pt;
+    margin-top: 0;
+}
+h2 {
+    color: #1f2328;
+    border-bottom: 1px solid #d0d7de;
+    padding-bottom: 0.2em;
+    font-size: 13pt;
+    margin-top: 1.2em;
+    page-break-after: avoid;
+}
+h3 {
+    color: #32383f;
+    font-size: 11pt;
+    margin-top: 1em;
+    page-break-after: avoid;
+}
+code {
+    background-color: #eff1f3;
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 88%;
+    color: #cf222e;
+}
+pre {
+    background-color: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 8.5pt;
+    line-height: 1.35;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+pre code {
+    background: none;
+    padding: 0;
+    color: #24292e;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.8em 0;
+    font-size: 9pt;
+    page-break-inside: avoid;
+}
+table, th, td {
+    border: 1px solid #d0d7de;
+}
+th {
+    background-color: #f6f8fa;
+    padding: 5px 8px;
+    font-weight: 600;
+    text-align: left;
+}
+td {
+    padding: 5px 8px;
+}
+tr:nth-child(even) {
+    background-color: #fcfdfe;
+}
+hr {
+    border: 0;
+    height: 1px;
+    background: #d0d7de;
+    margin: 1em 0;
+}
+ul, ol {
+    padding-left: 1.6em;
+}
+li {
+    margin: 0.2em 0;
+}
+</style>
+</head><body>
+<h1>JavaCPUtils: FastIO API Cheat Sheet</h1>
+
+<p><strong>High-speed Input &amp; Output Reference for Competitive Programming.</strong>  </p>
+<p>*Up to 10x faster reading than <code>Scanner</code>, 30x faster writing than <code>System.out.println</code>.*</p>
+
+<hr>
+
+<h2>1. Quick Start: The 10-Second Contest Template</h2>
+
+<pre><code>import cp.*;
+
+public class Solution {
+    public static void main(String[] shd) {
+        int t = FastIO.nextInt();
+        while (t-- &gt; 0) {
+            int n = FastIO.nextInt();
+            int[] arr = FastIO.nextIntArray(n);     // Read array in 1 line!
+            IntPair edge = FastIO.nextIntPair();   // Read pair in 1 line!
+
+            // Solve problem...
+
+            FastIO.println(&quot;YES&quot;);
+            FastIO.println(arr);                   // Prints 10 20 30 with newline!
+            FastIO.println(edge);                  // Prints (u, v) with newline!
+        }
+        FastIO.flush(); // CRITICAL: Always flush at the end of main()!
+    }
+}</code></pre>
+
+<hr>
+
+<h2>2. Complete Fast Input Methods (<code>FastIO</code> / <code>FastScanner</code>)</h2>
+
+<table>
+<tr><th>Operation</th><th>Method Signature</th><th>Return Type</th><th>Description</th></tr>
+<tr><td><strong>Check Available</strong></td><td><code>FastIO.hasNext()</code></td><td><code>boolean</code></td><td>Returns <code>true</code> if there are more non-whitespace tokens.</td></tr>
+<tr><td><strong>Read String Token</strong></td><td><code>FastIO.next()</code></td><td><code>String</code></td><td>Reads next whitespace-delimited word.</td></tr>
+<tr><td><strong>Read Entire Line</strong></td><td><code>FastIO.nextLine()</code></td><td><code>String</code></td><td>Reads remainder of line until <code>\n</code>.</td></tr>
+<tr><td><strong>Read 32-bit Integer</strong></td><td><code>FastIO.nextInt()</code></td><td><code>int</code></td><td>Reads next integer. Handles negative signs.</td></tr>
+<tr><td><strong>Read 64-bit Long</strong></td><td><code>FastIO.nextLong()</code></td><td><code>long</code></td><td>Reads next 64-bit integer up to $10^{18}$.</td></tr>
+<tr><td><strong>Read Decimal</strong></td><td><code>FastIO.nextDouble()</code></td><td><code>double</code></td><td>Reads next floating-point number.</td></tr>
+<tr><td><strong>Read Integer Array</strong></td><td><code>FastIO.nextIntArray(n)</code></td><td><code>int[]</code></td><td>Reads <code>n</code> space/newline-separated ints into an array.</td></tr>
+<tr><td><strong>Read Long Array</strong></td><td><code>FastIO.nextLongArray(n)</code></td><td><code>long[]</code></td><td>Reads <code>n</code> space/newline-separated longs into an array.</td></tr>
+<tr><td><strong>Read IntPair</strong></td><td><code>FastIO.nextIntPair()</code></td><td><code>IntPair</code></td><td>Reads next two ints directly into an <code>IntPair</code>.</td></tr>
+<tr><td><strong>Read LongPair</strong></td><td><code>FastIO.nextLongPair()</code></td><td><code>LongPair</code></td><td>Reads next two longs directly into a <code>LongPair</code>.</td></tr>
+</table>
+
+<hr>
+
+<h2>3. Complete Fast Output Methods (<code>FastIO</code> / <code>FastWriter</code>)</h2>
+
+<p>*All <code>println()</code> methods automatically append a newline (<code>\n</code>). No manual <code>\n</code> needed!*</p>
+
+<table>
+<tr><th>Operation</th><th>Method Signature</th><th>Trailing Newline?</th><th>Description</th></tr>
+<tr><td><strong>Print Value</strong></td><td><code>FastIO.print(val)</code></td><td>❌ No</td><td>Writes <code>int</code>, <code>long</code>, <code>double</code>, <code>char</code>, <code>String</code>, or <code>Object</code>.</td></tr>
+<tr><td><strong>Print with Newline</strong></td><td><code>FastIO.println(val)</code></td><td>✅ Yes</td><td>Writes value followed by <code>\n</code>.</td></tr>
+<tr><td><strong>Print Blank Line</strong></td><td><code>FastIO.println()</code></td><td>✅ Yes</td><td>Writes an empty line (<code>\n</code>).</td></tr>
+<tr><td><strong>Print Array (1 Line)</strong></td><td><code>FastIO.println(int[] a)</code></td><td>✅ Yes</td><td>Prints elements separated by space + <code>\n</code> at the end.</td></tr>
+<tr><td><strong>Print Array Inline</strong></td><td><code>FastIO.print(int[] a)</code></td><td>❌ No</td><td>Prints elements separated by space without trailing <code>\n</code>.</td></tr>
+<tr><td><strong>Print Long Array</strong></td><td><code>FastIO.println(long[] a)</code></td><td>✅ Yes</td><td>Prints long array space-separated + <code>\n</code> at the end.</td></tr>
+<tr><td><strong>Print Pair</strong></td><td><code>FastIO.println(pair)</code></td><td>✅ Yes</td><td>Prints <code>(first, second)</code> followed by <code>\n</code>.</td></tr>
+<tr><td><strong>Flush Buffer</strong></td><td><code>FastIO.flush()</code></td><td>—</td><td><strong>MANDATORY</strong>: Dumps 64KB RAM buffer to terminal/judge.</td></tr>
+</table>
+
+<hr>
+
+<h2>4. Key Rules to Remember in Live Contests ⚠️</h2>
+
+<li><strong>Always Call <code>FastIO.flush()</code> at the end of <code>main()</code>:</strong>  </li>
+<p>   Because <code>FastWriter</code> stores output in high-speed RAM, if you forget <code>FastIO.flush()</code>, your output may stay trapped in memory and Codeforces will show <strong>Wrong Answer</strong> on empty output!</p>
+<li><strong>Online Judge Submissions:</strong>  </li>
+<p>   Run <code>bundle Solution.java</code> before uploading to Codeforces, LeetCode, CSES, or HackerRank.</p>
+</body></html>

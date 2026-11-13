@@ -1,41 +1,41 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><title>JavaCPUtils Guide</title>
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>JavaCPUtils_Complete_Guide</title>
 <style>
 @page {
     size: A4;
-    margin: 18mm 14mm 18mm 14mm;
+    margin: 16mm 14mm 16mm 14mm;
 }
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.55;
+    line-height: 1.5;
     color: #24292e;
     max-width: 900px;
     margin: 0 auto;
-    font-size: 10.5pt;
+    font-size: 10pt;
 }
 h1 {
     color: #0969da;
     border-bottom: 2px solid #d0d7de;
-    padding-bottom: 0.3em;
-    font-size: 20pt;
+    padding-bottom: 0.25em;
+    font-size: 18pt;
     margin-top: 0;
 }
 h2 {
     color: #1f2328;
     border-bottom: 1px solid #d0d7de;
-    padding-bottom: 0.25em;
-    font-size: 14pt;
-    margin-top: 1.4em;
+    padding-bottom: 0.2em;
+    font-size: 13pt;
+    margin-top: 1.2em;
     page-break-after: avoid;
 }
 h3 {
     color: #32383f;
-    font-size: 12pt;
-    margin-top: 1.1em;
+    font-size: 11pt;
+    margin-top: 1em;
     page-break-after: avoid;
 }
 code {
     background-color: #eff1f3;
-    padding: 0.2em 0.4em;
+    padding: 0.15em 0.35em;
     border-radius: 4px;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     font-size: 88%;
@@ -45,10 +45,10 @@ pre {
     background-color: #f6f8fa;
     border: 1px solid #d0d7de;
     border-radius: 6px;
-    padding: 10px 14px;
+    padding: 8px 12px;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-    font-size: 9pt;
-    line-height: 1.4;
+    font-size: 8.5pt;
+    line-height: 1.35;
     page-break-inside: avoid;
     white-space: pre-wrap;
     word-break: break-all;
@@ -61,8 +61,8 @@ pre code {
 table {
     border-collapse: collapse;
     width: 100%;
-    margin: 1em 0;
-    font-size: 9.5pt;
+    margin: 0.8em 0;
+    font-size: 9pt;
     page-break-inside: avoid;
 }
 table, th, td {
@@ -70,12 +70,12 @@ table, th, td {
 }
 th {
     background-color: #f6f8fa;
-    padding: 6px 10px;
+    padding: 5px 8px;
     font-weight: 600;
     text-align: left;
 }
 td {
-    padding: 6px 10px;
+    padding: 5px 8px;
 }
 tr:nth-child(even) {
     background-color: #fcfdfe;
@@ -84,13 +84,13 @@ hr {
     border: 0;
     height: 1px;
     background: #d0d7de;
-    margin: 1.2em 0;
+    margin: 1em 0;
 }
 ul, ol {
-    padding-left: 1.8em;
+    padding-left: 1.6em;
 }
 li {
-    margin: 0.25em 0;
+    margin: 0.2em 0;
 }
 </style>
 </head><body>
@@ -370,10 +370,10 @@ dependencies {
 
 <h2>8. Roadmap for <code>JavaCPUtils</code></h2>
 
-<div style="margin: 3px 0;"><input type="checkbox" checked disabled> <strong>v1.0.0</strong>: <code>Pair&lt;F, S&gt;</code>, <code>IntPair</code>, <code>LongPair</code>, Bundler tool, 1-Click installers, JitPack release.</div>
-<div style="margin: 3px 0;"><input type="checkbox"  disabled> <strong>v1.1.0</strong>: <code>Triple&lt;A, B, C&gt;</code> and primitive <code>IntTriple</code> / <code>LongTriple</code>.</div>
-<div style="margin: 3px 0;"><input type="checkbox"  disabled> <strong>v1.2.0</strong>: <code>FastScanner</code> and <code>FastWriter</code> for high-throughput I/O (up to 5x faster than <code>Scanner</code> and <code>System.out.println</code>).</div>
-<div style="margin: 3px 0;"><input type="checkbox"  disabled> <strong>v1.3.0</strong>: Core algorithmic data structures:</div>
+<li>[x] <strong>v1.0.0</strong>: <code>Pair&lt;F, S&gt;</code>, <code>IntPair</code>, <code>LongPair</code>, Bundler tool, 1-Click installers, JitPack release.</li>
+<li>[ ] <strong>v1.1.0</strong>: <code>Triple&lt;A, B, C&gt;</code> and primitive <code>IntTriple</code> / <code>LongTriple</code>.</li>
+<li>[ ] <strong>v1.2.0</strong>: <code>FastScanner</code> and <code>FastWriter</code> for high-throughput I/O (up to 5x faster than <code>Scanner</code> and <code>System.out.println</code>).</li>
+<li>[ ] <strong>v1.3.0</strong>: Core algorithmic data structures:</li>
 <p>  - Disjoint Set Union (DSU with union by rank and path compression)</p>
 <p>  - Fenwick Tree (Binary Indexed Tree / BIT)</p>
 <p>  - Segment Tree with point &amp; range updates</p>
