@@ -19,11 +19,11 @@ AVAILABLE_CLASSES = {
     "LongPair": "LongPair.java",
     "FastScanner": "FastScanner.java",
     "FastWriter": "FastWriter.java",
-    "IO": "IO.java"
+    "FastIO": "FastIO.java"
 }
 
 CLASS_DEPENDENCIES = {
-    "IO": ["FastScanner", "FastWriter"],
+    "FastIO": ["FastScanner", "FastWriter"],
     "FastScanner": ["IntPair", "LongPair"]
 }
 
@@ -97,7 +97,7 @@ def bundle(input_path: str, output_path: str = None):
                         changed = True
 
     # Order classes gracefully
-    order = ["Pair", "IntPair", "LongPair", "FastScanner", "FastWriter", "IO"]
+    order = ["Pair", "IntPair", "LongPair", "FastScanner", "FastWriter", "FastIO"]
     inlined_code = []
     for class_name in order:
         if class_name in needed_classes:

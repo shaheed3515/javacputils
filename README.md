@@ -11,9 +11,9 @@ Brings the seamless developer experience of C++ (`std::pair`, `make_pair`, fast 
 
 ## ⚡ What's New in v1.1.0
 
-- **High-Speed `IO` Gateway:** Zero-object static I/O (`IO.nextInt()`, `IO.println()`, `IO.flush()`).
+- **High-Speed `FastIO` Gateway:** Zero-object static I/O (`FastIO.nextInt()`, `FastIO.println()`, `FastIO.flush()`).
 - **`FastScanner`:** Up to **10x faster** than `java.util.Scanner` by bypassing regex parsing. Reads arrays in one line (`in.nextIntArray(n)`).
-- **`FastWriter`:** Up to **30x faster** than `System.out.println()` with 64KB memory buffering. Prints arrays in one line (`IO.println(arr)`).
+- **`FastWriter`:** Up to **30x faster** than `System.out.println()` with 64KB memory buffering. Prints arrays in one line (`FastIO.println(arr)`).
 - **Online Judge Bundler Updated:** Automatically inlines only the classes you use into a clean, human-style submission file for Codeforces and LeetCode.
 
 ---
@@ -55,7 +55,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.shaheed3515:javacputils:v1.1.0'
+    implementation 'com.github.shaheed3515:javacputils:v1.1.1'
 }
 ```
 
@@ -72,7 +72,7 @@ dependencies {
     <dependency>
         <groupId>com.github.shaheed3515</groupId>
         <artifactId>javacputils</artifactId>
-        <version>v1.1.0</version>
+        <version>v1.1.1</version>
     </dependency>
 </dependencies>
 ```
@@ -88,14 +88,14 @@ import cp.*;
 public class Main {
     public static void main(String[] args) {
         // Zero object creation: fast static I/O
-        int n = IO.nextInt();
-        int[] arr = IO.nextIntArray(n);     // Read array in 1 line!
-        IntPair edge = IO.nextIntPair();   // Read pair in 1 line!
+        int n = FastIO.nextInt();
+        int[] arr = FastIO.nextIntArray(n);     // Read array in 1 line!
+        IntPair edge = FastIO.nextIntPair();   // Read pair in 1 line!
 
-        IO.println("Result:");
-        IO.println(arr);                   // Prints space-separated with newline!
-        IO.println(edge);                  // Prints (u, v) with newline!
-        IO.flush();                        // Flush buffered output in 0.04s!
+        FastIO.println("Result:");
+        FastIO.println(arr);                   // Prints space-separated with newline!
+        FastIO.println(edge);                  // Prints (u, v) with newline!
+        FastIO.flush();                        // Flush buffered output in 0.04s!
     }
 }
 ```

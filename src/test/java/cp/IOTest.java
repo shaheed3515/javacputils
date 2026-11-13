@@ -45,9 +45,12 @@ public class IOTest {
         fw.flush();
 
         String expected = "YES\n42\n10 20 30\n(5, 15)\n";
-        // Normalize newlines for cross-platform consistency
         String actual = out.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
         assertEquals(expected, actual);
     }
-}
 
+    @Test
+    public void testFastIOClassExists() {
+        assertNotNull(FastIO.class);
+    }
+}

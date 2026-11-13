@@ -5,19 +5,19 @@ package cp;
  * <p>
  * Provides instant static methods for zero-boilerplate reading and writing:
  * <pre>{@code
- * int n = IO.nextInt();
- * int[] a = IO.nextIntArray(n);
- * IO.println("YES");
- * IO.println(a);
- * IO.flush();
+ * int n = FastIO.nextInt();
+ * int[] a = FastIO.nextIntArray(n);
+ * FastIO.println("YES");
+ * FastIO.println(a);
+ * FastIO.flush();
  * }</pre>
  */
-public final class IO {
+public final class FastIO {
 
     private static final FastScanner scanner = new FastScanner();
     private static final FastWriter writer = new FastWriter();
 
-    private IO() {} // Utility class
+    private FastIO() {} // Utility class
 
     // ==========================================
     // Fast Input Methods
@@ -93,3 +93,4 @@ public final class IO {
         writer.flush();
     }
 }
+
