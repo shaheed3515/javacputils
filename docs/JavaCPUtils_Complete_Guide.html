@@ -1,0 +1,380 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>JavaCPUtils Guide</title>
+<style>
+@page {
+    size: A4;
+    margin: 18mm 14mm 18mm 14mm;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    color: #24292e;
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 10.5pt;
+}
+h1 {
+    color: #0969da;
+    border-bottom: 2px solid #d0d7de;
+    padding-bottom: 0.3em;
+    font-size: 20pt;
+    margin-top: 0;
+}
+h2 {
+    color: #1f2328;
+    border-bottom: 1px solid #d0d7de;
+    padding-bottom: 0.25em;
+    font-size: 14pt;
+    margin-top: 1.4em;
+    page-break-after: avoid;
+}
+h3 {
+    color: #32383f;
+    font-size: 12pt;
+    margin-top: 1.1em;
+    page-break-after: avoid;
+}
+code {
+    background-color: #eff1f3;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 88%;
+    color: #cf222e;
+}
+pre {
+    background-color: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 9pt;
+    line-height: 1.4;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+pre code {
+    background: none;
+    padding: 0;
+    color: #24292e;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+}
+table, th, td {
+    border: 1px solid #d0d7de;
+}
+th {
+    background-color: #f6f8fa;
+    padding: 6px 10px;
+    font-weight: 600;
+    text-align: left;
+}
+td {
+    padding: 6px 10px;
+}
+tr:nth-child(even) {
+    background-color: #fcfdfe;
+}
+hr {
+    border: 0;
+    height: 1px;
+    background: #d0d7de;
+    margin: 1.2em 0;
+}
+ul, ol {
+    padding-left: 1.8em;
+}
+li {
+    margin: 0.25em 0;
+}
+</style>
+</head><body>
+<h1>JavaCPUtils: Architecture, Implementation &amp; Publishing Guide</h1>
+<p><strong>Author:</strong> shaheed shaik  </p>
+<p><strong>GitHub:</strong> <a href="https://github.com/shaheed3515/javacputils">https://github.com/shaheed3515/javacputils</a>  </p>
+<p><strong>Release:</strong> <code>v1.0.0</code> (JitPack: <code>com.github.shaheed3515:javacputils:v1.0.0</code>)</p>
+
+<hr>
+
+<h2>Table of Contents</h2>
+<li><a href="#1-executive-summary--motivation">Executive Summary &amp; Motivation</a></li>
+<li><a href="#2-language-mechanics-java-vs-c-in-competitive-programming">Language Mechanics: Java vs. C++ in Competitive Programming</a></li>
+<li><a href="#3-architecture-of-core-library-classes">Architecture of Core Library Classes</a></li>
+<p>   - <a href="#generic-pair-pairf-s">Generic Pair (<code>Pair&lt;F, S&gt;</code>)</a></p>
+<p>   - <a href="#high-performance-primitive-intpair">High-Performance Primitive <code>IntPair</code></a></p>
+<p>   - <a href="#high-performance-primitive-longpair">High-Performance Primitive <code>LongPair</code></a></p>
+<li><a href="#4-sorting-comparison--java-memory-deep-dive">Sorting, Comparison &amp; Java Memory Deep Dive</a></li>
+<p>   - <a href="#why-primitive-specialization-is-3x-faster">Why Primitive Specialization is 3x Faster</a></p>
+<p>   - <a href="#the-subtraction-overflow-trap">The Subtraction Overflow Trap</a></p>
+<p>   - <a href="#priorityqueue--dijkstra-min-heap-integration">PriorityQueue &amp; Dijkstra Min-Heap Integration</a></p>
+<li><a href="#5-the-online-judge-dilemma--automated-bundler">The Online Judge Dilemma &amp; Automated Bundler</a></li>
+<p>   - <a href="#why-online-judges-reject-external-libraries">Why Online Judges Reject External Libraries</a></p>
+<p>   - <a href="#how-bundle-solutionjava-solves-it">How <code>bundle Solution.java</code> Solves It</a></p>
+<li><a href="#6-multi-channel-distribution-guide">Multi-Channel Distribution Guide</a></li>
+<p>   - <a href="#channel-1-1-click-zero-config-installation-beginnersstudents">Channel 1: 1-Click Zero-Config Installation (Beginners/Students)</a></p>
+<p>   - <a href="#channel-2-gradle--maven-via-jitpack-developers">Channel 2: Gradle &amp; Maven via JitPack (Developers)</a></p>
+<p>   - <a href="#channel-3-direct-standalone-jar-download">Channel 3: Direct Standalone JAR Download</a></p>
+<li><a href="#7-publishing-pipeline-from-code-to-jitpack-cdn">Publishing Pipeline: From Code to JitPack CDN</a></li>
+<li><a href="#8-roadmap-for-javacputils">Roadmap for <code>JavaCPUtils</code></a></li>
+
+<hr>
+
+<h2>1. Executive Summary &amp; Motivation</h2>
+
+<p>In competitive programming (CP) and algorithm contests (Codeforces, LeetCode, AtCoder, CSES), speed of implementation and execution speed are paramount.</p>
+
+<p>C++ developers take <code>std::pair</code> for granted:</p>
+<pre><code>pair&lt;int, int&gt; p = {10, 20};
+p.first += 5;
+cout &lt;&lt; p.first &lt;&lt; &quot; &quot; &lt;&lt; p.second;</code></pre>
+
+<p>Java developers, however, have historically faced multiple barriers:</p>
+<li>Java has no standard <code>Pair</code> in <code>java.util</code>.</li>
+<li><code>Map.Entry</code> is verbose and immutable.</li>
+<li>Java records (<code>record Pair&lt;F, S&gt;(F first, S second)</code>) use accessor methods <code>p.first()</code> instead of public fields and cannot be mutated in place.</li>
+<li>Generic <code>Pair&lt;Integer, Integer&gt;</code> introduces severe autoboxing and pointer-chasing overhead, which can cause Time Limit Exceeded (TLE) on tight constraints ($N = 2 \times 10^5$, $1.0\text{s}$).</li>
+
+<p><strong><code>JavaCPUtils</code></strong> was created to eliminate this gap completely by providing:</p>
+<li>Direct public fields (<code>p.first</code>, <code>p.second</code>) for the exact C++ developer experience.</li>
+<li>Natural lexicographical comparison out-of-the-box (<code>Comparable&lt;Pair&gt;</code>).</li>
+<li>Primitive-specialized <code>IntPair</code> and <code>LongPair</code> classes delivering up to <strong>3x faster execution</strong> and <strong>60% memory reduction</strong>.</li>
+<li>An automated <strong>Bundler CLI</strong> that allows writing clean <code>import cp.*;</code> locally while producing single-file code for online judges.</li>
+<li>Global 1-click installers so students and teammates never have to configure build tools.</li>
+
+<hr>
+
+<h2>2. Language Mechanics: Java vs. C++ in Competitive Programming</h2>
+
+<table>
+<tr><th>Feature</th><th>C++ (<code>std::pair</code>)</th><th>Standard Java</th><th>JavaCPUtils</th></tr>
+<tr><td><strong>Field Access</strong></td><td><code>p.first</code>, <code>p.second</code></td><td><code>p.getKey()</code>, <code>p.first()</code></td><td><code>p.first</code>, <code>p.second</code></td></tr>
+<tr><td><strong>Field Mutation</strong></td><td>Direct (<code>p.first = 5;</code>)</td><td>Immutable or setter method</td><td>Direct (<code>p.first = 5;</code>)</td></tr>
+<tr><td><strong>Object Creation</strong></td><td><code>make_pair(a, b)</code></td><td><code>new AbstractMap.SimpleEntry&lt;&gt;(a, b)</code></td><td><code>Pair.of(a, b)</code> or <code>new Pair&lt;&gt;(a, b)</code></td></tr>
+<tr><td><strong>Type Inference</strong></td><td><code>auto p = ...</code></td><td><code>var p = ...</code> (Java 10+)</td><td><code>var p = Pair.of(...)</code></td></tr>
+<tr><td><strong>Lexicographical Sort</strong></td><td>Built-in (<code>operator&lt;</code>)</td><td>Manual <code>Comparator</code> lambda required</td><td>Automatic (<code>implements Comparable</code>)</td></tr>
+<tr><td><strong>Primitive Speed</strong></td><td>Native primitive <code>pair&lt;int, int&gt;</code></td><td>Boxed <code>Pair&lt;Integer, Integer&gt;</code> (slow)</td><td>Native <code>IntPair</code> &amp; <code>LongPair</code> (ultra-fast)</td></tr>
+<tr><td><strong>Package Import</strong></td><td><code>#include &lt;utility&gt;</code></td><td>None</td><td><code>import cp.*;</code></td></tr>
+</table>
+
+<hr>
+
+<h2>3. Architecture of Core Library Classes</h2>
+
+<h3>Generic Pair (<code>Pair&lt;F, S&gt;</code>)</h3>
+<p>Located in package <code>cp</code>:</p>
+<pre><code>public class Pair&lt;F, S&gt; implements Comparable&lt;Pair&lt;F, S&gt;&gt;, Serializable, Cloneable {
+    public F first;
+    public S second;
+
+    public Pair() { ... }
+    public Pair(F first, S second) { ... }
+    public Pair(Pair&lt;? extends F, ? extends S&gt; other) { ... }
+
+    public static &lt;F, S&gt; Pair&lt;F, S&gt; of(F first, S second) { return new Pair&lt;&gt;(first, second); }
+    public static &lt;F, S&gt; Pair&lt;F, S&gt; make(F first, S second) { return new Pair&lt;&gt;(first, second); }
+
+    public void set(F first, S second) { this.first = first; this.second = second; }
+    public Pair&lt;S, F&gt; swap() { return new Pair&lt;&gt;(this.second, this.first); }
+
+    @Override
+    public int compareTo(Pair&lt;F, S&gt; other) { ... } // Lexicographical comparison
+
+    public static &lt;F extends Comparable&lt;? super F&gt;, S&gt; Comparator&lt;Pair&lt;F, S&gt;&gt; comparingFirst() { ... }
+    public static &lt;F, S extends Comparable&lt;? super S&gt;&gt; Comparator&lt;Pair&lt;F, S&gt;&gt; comparingSecond() { ... }
+}</code></pre>
+
+<h3>High-Performance Primitive <code>IntPair</code></h3>
+<li>Fields: <code>public int first; public int second;</code></li>
+<li>Memory per instance: <strong>24 bytes</strong> (vs. ~64 bytes for <code>Pair&lt;Integer, Integer&gt;</code>).</li>
+<li>Hashing: <code>hashCode()</code> uses direct integer arithmetic (<code>31 * first + second</code>) with zero array allocation.</li>
+<li>Comparison: Uses <code>Integer.compare(first, other.first)</code> to remain completely immune to integer overflow.</li>
+
+<h3>High-Performance Primitive <code>LongPair</code></h3>
+<li>Fields: <code>public long first; public long second;</code></li>
+<li>Essential for graph algorithms (e.g., Dijkstra&#x27;s shortest path) where cumulative path weights exceed $2 \times 10^9$ and require 64-bit integer precision.</li>
+
+<hr>
+
+<h2>4. Sorting, Comparison &amp; Java Memory Deep Dive</h2>
+
+<h3>Why Primitive Specialization is 3x Faster</h3>
+
+<p>In standard Java generics, primitive types cannot be type arguments directly, requiring boxed objects (<code>Integer</code>, <code>Long</code>):</p>
+
+<pre><code>Generic Pair&lt;Integer, Integer&gt; in RAM:
+[ Pair Object (~24 bytes) ]
+   ├── Pointer to first  ──&gt; [ Integer Object (~16 bytes) ]
+   └── Pointer to second ──&gt; [ Integer Object (~16 bytes) ]
+Total: ~56 - 64 bytes per pair.</code></pre>
+
+<pre><code>Primitive IntPair in RAM:
+[ IntPair Object (~24 bytes) ]
+   ├── int first  (4 bytes contiguous)
+   └── int second (4 bytes contiguous)
+Total: 24 bytes per pair (Nearly 3x memory reduction).</code></pre>
+
+<h4>Performance Consequences:</h4>
+<li><strong>CPU Cache Locality:</strong> <code>IntPair</code> stores <code>first</code> and <code>second</code> adjacent in memory. Loading <code>first</code> into CPU cache lines automatically loads <code>second</code>.</li>
+<li><strong>Garbage Collection (GC) Pressure:</strong> Sorting $2 \times 10^5$ items creates <strong>600,000 objects</strong> with boxed <code>Pair</code>, but only <strong>200,000 objects</strong> with <code>IntPair</code>.</li>
+<li><strong>Autoboxing Overhead:</strong> Avoids millions of hidden calls to <code>Integer.valueOf()</code> and <code>intValue()</code>.</li>
+
+<h3>The Subtraction Overflow Trap</h3>
+
+<p>Many competitive programmers mistakenly sort using subtraction:</p>
+<pre><code>// ❌ DANGEROUS BUG IN JAVA:
+list.sort((a, b) -&gt; a.second - b.second);</code></pre>
+<p>If <code>a.second = -2,000,000,000</code> and <code>b.second = 2,000,000,000</code>, the subtraction underflows to <code>+294,967,296</code>. Java&#x27;s TimSort will misorder the elements or throw <code>IllegalArgumentException: Comparison method violates its general contract!</code>.</p>
+
+<p><strong>JavaCPUtils guarantees safety</strong> by using <code>Integer.compare()</code> and <code>Long.compare()</code> throughout all <code>compareTo</code> and built-in <code>Comparator</code> implementations:</p>
+<pre><code>// ✅ SAFE &amp; OVERFLOW-PROOF:
+@Override
+public int compareTo(IntPair other) {
+    if (this.first != other.first) {
+        return Integer.compare(this.first, other.first);
+    }
+    return Integer.compare(this.second, other.second);
+}</code></pre>
+
+<h3>PriorityQueue &amp; Dijkstra Min-Heap Integration</h3>
+
+<p>Because <code>Pair</code>, <code>IntPair</code>, and <code>LongPair</code> implement <code>Comparable</code>, they integrate natively with Java collections:</p>
+<pre><code>// Dijkstra&#x27;s Shortest Path Algorithm:
+PriorityQueue&lt;LongPair&gt; pq = new PriorityQueue&lt;&gt;();
+pq.add(new LongPair(0L, startNode)); // (distance, node)
+
+while (!pq.isEmpty()) {
+    LongPair top = pq.poll();
+    long d = top.first;
+    int u = (int) top.second;
+    ...
+}</code></pre>
+
+<hr>
+
+<h2>5. The Online Judge Dilemma &amp; Automated Bundler</h2>
+
+<h3>Why Online Judges Reject External Libraries</h3>
+<p>When submitting code to Codeforces, LeetCode, CSES, or AtCoder:</p>
+<li>The execution sandbox is strictly offline and isolated.</li>
+<li>The judging servers only contain standard JDK classes (<code>java.util.*</code>, <code>java.io.*</code>).</li>
+<li>Submitting <code>import cp.*;</code> directly produces: <code>error: package cp does not exist</code>.</li>
+
+<h3>How <code>bundle Solution.java</code> Solves It</h3>
+<p><code>JavaCPUtils</code> includes a dedicated bundling utility (<code>scripts/bundle.py</code> and <code>scripts/bundle</code>).</p>
+
+<h4>Workflow:</h4>
+<li>Write clean solution code locally:</li>
+<p>   ```java</p>
+<p>   import cp.*;</p>
+<p>   import java.util.*;</p>
+
+<p>   public class Solution {</p>
+<p>       public static void main(String[] args) {</p>
+<p>           IntPair p = new IntPair(10, 20);</p>
+<p>           System.out.println(p.first + p.second);</p>
+<p>       }</p>
+<p>   }</p>
+<p>   ```</p>
+<li>Run the bundle command:</li>
+<p>   ```bash</p>
+<p>   bundle Solution.java</p>
+<p>   ```</p>
+<li>The tool:</li>
+<p>   - Removes <code>import cp.*;</code>.</p>
+<p>   - Detects all used library classes (<code>IntPair</code>, <code>Pair</code>, <code>LongPair</code>).</p>
+<p>   - Inlines them as package-private classes at the bottom of <code>Solution_bundled.java</code>.</p>
+<p>   - Adjusts class accessibility so <code>javac Solution_bundled.java</code> compiles under any file name.</p>
+<li>Copy-paste <code>Solution_bundled.java</code> into Codeforces or LeetCode for an immediate <strong>Accepted (AC)</strong> verdict!</li>
+
+<hr>
+
+<h2>6. Multi-Channel Distribution Guide</h2>
+
+<h3>Channel 1: 1-Click Zero-Config Installation (Beginners/Students)</h3>
+<p>Designed for students and peers who do not use Maven or Gradle.</p>
+
+<h4>Linux &amp; macOS:</h4>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/shaheed3515/javacputils/main/scripts/install.sh | bash</code></pre>
+<p>*What it does:* Downloads <code>javacputils.jar</code>, sets up <code>CLASSPATH</code> in <code>~/.bashrc</code> / <code>~/.zshrc</code>, and installs the <code>bundle</code> command into <code>PATH</code>.</p>
+
+<h4>Windows (PowerShell):</h4>
+<pre><code>irm https://raw.githubusercontent.com/shaheed3515/javacputils/main/scripts/install.bat -OutFile install.bat; .\install.bat</code></pre>
+<p>*What it does:* Downloads <code>javacputils.jar</code> to <code>%USERPROFILE%\.javacputils</code>, updates the user <code>CLASSPATH</code> and <code>Path</code> environment variables in Windows Registry.</p>
+
+<hr>
+
+<h3>Channel 2: Gradle &amp; Maven via JitPack (Developers)</h3>
+
+<h4>Gradle (<code>build.gradle</code>):</h4>
+<pre><code>repositories {
+    mavenCentral()
+    maven { url &#x27;https://jitpack.io&#x27; }
+}
+
+dependencies {
+    implementation &#x27;com.github.shaheed3515:javacputils:v1.0.0&#x27;
+}</code></pre>
+
+<h4>Maven (<code>pom.xml</code>):</h4>
+<pre><code>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;jitpack.io&lt;/id&gt;
+        &lt;url&gt;https://jitpack.io&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.shaheed3515&lt;/groupId&gt;
+        &lt;artifactId&gt;javacputils&lt;/artifactId&gt;
+        &lt;version&gt;v1.0.0&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+
+<hr>
+
+<h3>Channel 3: Direct Standalone JAR Download</h3>
+<p>Pre-compiled binary assets are attached to every GitHub Release:</p>
+<li><code>javacputils-1.0.0.jar</code> (Binary library)</li>
+<li><code>javacputils-1.0.0-sources.jar</code> (Source code for IDEs)</li>
+<li><code>javacputils-1.0.0-javadoc.jar</code> (API Documentation)</li>
+
+<p>Download from: <a href="https://github.com/shaheed3515/javacputils/releases/tag/v1.0.0">github.com/shaheed3515/javacputils/releases/tag/v1.0.0</a></p>
+
+<hr>
+
+<h2>7. Publishing Pipeline: From Code to JitPack CDN</h2>
+
+<p>The release process follows modern automated artifact publishing:</p>
+
+<pre><code>[ Local Java Code (src/main/java/cp) ]
+                  │
+                  ▼  (mvn clean test package)
+[ Verified Artifacts (JAR, Sources, Javadoc) ]
+                  │
+                  ▼  (git tag v1.0.0 &amp;&amp; git push)
+[ GitHub Repository &amp; Release (shaheed3515/javacputils) ]
+                  │
+                  ▼  (Triggered via HTTP request)
+[ JitPack Build Engine (JitPack CDN) ]
+                  │
+                  ▼  (Global distribution)
+[ Any Developer / Laptop in the World ]</code></pre>
+
+<hr>
+
+<h2>8. Roadmap for <code>JavaCPUtils</code></h2>
+
+<div style="margin: 3px 0;"><input type="checkbox" checked disabled> <strong>v1.0.0</strong>: <code>Pair&lt;F, S&gt;</code>, <code>IntPair</code>, <code>LongPair</code>, Bundler tool, 1-Click installers, JitPack release.</div>
+<div style="margin: 3px 0;"><input type="checkbox"  disabled> <strong>v1.1.0</strong>: <code>Triple&lt;A, B, C&gt;</code> and primitive <code>IntTriple</code> / <code>LongTriple</code>.</div>
+<div style="margin: 3px 0;"><input type="checkbox"  disabled> <strong>v1.2.0</strong>: <code>FastScanner</code> and <code>FastWriter</code> for high-throughput I/O (up to 5x faster than <code>Scanner</code> and <code>System.out.println</code>).</div>
+<div style="margin: 3px 0;"><input type="checkbox"  disabled> <strong>v1.3.0</strong>: Core algorithmic data structures:</div>
+<p>  - Disjoint Set Union (DSU with union by rank and path compression)</p>
+<p>  - Fenwick Tree (Binary Indexed Tree / BIT)</p>
+<p>  - Segment Tree with point &amp; range updates</p>
+</body></html>
